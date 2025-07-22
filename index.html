@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Chat</title>
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        background-color: black; /* Set background color to black */
+        color: white; /* Set text color to white */
+        flex-direction: column;
+    }  
+
+        #users, #right {
+            display: none; /* Hide the left and right sides initially */
+        }
+
+        #left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            padding: 0px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        #right {
+            flex: 2;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Styles for the users list */
+        .user-box {
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Styles for messages */
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding-left: 20px;
+            padding-right: 20px;
+            overflow-y: auto;
+            text-align: right; /* Align all messages to the right side */
+        }
+
+        #messages li {
+            display: block; /* Display each message on a new line */
+            clear: both; /* Ensure each message box starts on a new line */
+            padding: 8px 12px;
+            padding-left: 20px; /* Add left padding */
+            padding-right: 20px; /* Add right padding */
+            border-radius: 5px;
+            margin: 5px 0; /* Add margin for spacing between messages */
+            background-color: grey; /* Optional: Set a background color for the message box */
+            width: fit-content;
+            float: left; /* Float messages to the right */
+            clear: both; /* Ensure each message box starts on a new line */
+        }
+
+        #messages li:last-child {
+            border-bottom: none;
+        }
+
+        #form {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        #input {
+            flex: 1;
+            padding: 6px 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 6px 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #username-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    
+}
+
+        #username {
+            flex: 1;
+            padding: 6px 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        #submit-username {
+            padding: 6px 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .message-right {
+            text-align: right;
+            justify-content: flex-end; /* Align to right for messages from username */
+            margin-right: 20px;
+            padding-right: 20px; /* Add padding to the right for messages on the right side */
+        }
+
+        .message-left {
+            text-align: left;
+            justify-content: flex-start; /* Align to left for messages not from username */
+            margin-left: 20px;
+            padding-left: 20px; /* Add padding to the left for messages on the left side */
+        }
+
+        .nousers {
+            margin-bottom: 10px;
+            padding: 5px;
+            
+            width: 300px;
+            height: 50px; /* Set the height of the user box */
+            border-radius: 4px;
+            display: flex; /* Use flexbox */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            font-size: 25px;
+        }
+
+        .user-box {
+            margin-bottom: 10px;
+            padding: 5px;
+            background-color: grey;
+            width: 300px;
+            height: 50px; /* Set the height of the user box */
+            border-radius: 4px;
+            display: flex; /* Use flexbox */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            font-size: 25px;
+        }
+
+        #onlineusers {
+            display: none;
+            margin: 0 auto;
+            width: 60%;
+        }
+
+        #users {
+            margin: 0 auto;
+            width: 75%;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+            background-color: black;
+            color: white;
+            padding: 10px 0;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            height: 100vh;
+        }
+
+        .tagline {
+            width: 100%;
+            margin: 0 auto;
+            background-color: grey;
+        }
+
+        #messages-header {
+            padding-left: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ChitChat</h1>
+        <div class="tagline"><h3>Chat anonymously with anyone on the internet.</h3></div>
+    </div>
+    <div class="container">
+    <div id="left">
+        <div id="username-container">
+            <input id="username" autocomplete="off" placeholder="Enter your username..." />
+            <button id="submit-username">Submit</button>
+        </div>
+        <div id="onlineusers"><h3 >Users Online:</h3></div>
+        <div id="users"></div>  
+    </div>
+    <div id="right">
+        <h3 id="messages-header"></h3>
+        <ul id="messages"></ul>
+        <form id="form">
+            <input id="input" autocomplete="off" placeholder="Type a message..." />
+            <button>Send</button>
+        </form>
+    </div>
+</div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        var form = document.getElementById('form');
+        var input = document.getElementById('input');
+        var messages = document.getElementById('messages');
+        var usernameInput = document.getElementById('username');
+        var submitUsernameBtn = document.getElementById('submit-username');
+        var usersContainer = document.getElementById('users');
+        var rightSide = document.getElementById('right');
+        var messagesHeader = document.getElementById('messages-header');
+        
+        var username = '';
+        var selectedUsername = '';
+
+        submitUsernameBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (usernameInput.value) {
+                username = usernameInput.value;
+                document.getElementById('username-container').style.display = 'none';
+                document.getElementById('left').style.display = 'block'; // Show the left side
+                document.getElementById('users').style.display = 'block';
+                document.getElementById('onlineusers').style.display = 'block';
+                socket.emit('new user', username);
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (input.value && selectedUsername) {
+        // Send the message data to the server
+        socket.emit('chat message', { from: username, to: selectedUsername, message: input.value });
+        input.value = '';
+    }
+});
+
+        // Load messages for a specific user when their username is clicked
+        usersContainer.addEventListener('click', function(e) {
+    if (e.target && e.target.nodeName === 'DIV') {
+        selectedUsername = e.target.textContent;
+        if(selectedUsername === 'Group Chat')
+        {
+            messagesHeader.textContent = selectedUsername;
+        }
+        else
+        {
+            messagesHeader.textContent = 'Chat with ' + selectedUsername;
+        }
+        if(selectedUsername !== 'No users online')
+        {
+            rightSide.style.display = 'block';
+        }
+        else
+        {
+            rightSide.style.display = 'none';
+        }
+        
+        // Emit a message retrieval request to the server
+        if(selectedUsername === 'Group Chat')
+        {
+            socket.emit('retrieve messages gc', { to: selectedUsername });
+        }
+        else {
+        socket.emit('retrieve messages', { from: username, to: selectedUsername });
+        }
+    }
+});
+
+socket.on('messages retrieved', function(allMessages) {
+    messages.innerHTML = '';
+
+    if (allMessages.length === 0) {
+        // No messages found, handle this case (e.g., display a message)
+        return;
+    }
+
+    allMessages.forEach((message) => {
+    const messageText = (message.from === username ? 'You: ' : message.from + ': ') + message.message;
+    var item = document.createElement('li');
+    item.textContent = messageText;
+
+    // Add a class based on the message sender
+    if (message.from === username) {
+        item.classList.add('message-right');
+        item.style.float = 'right'; // Change float to right for messages from username
+    } else {
+        item.classList.add('message-left');
+        item.style.float = 'left'; // Change float to left for other messages
+    }
+
+    messages.appendChild(item);
+});
+
+});
+
+
+
+    socket.on('chat message', function(data) {
+    
+    if(selectedUsername === 'Group Chat')
+        {
+            socket.emit('retrieve messages gc', { to: selectedUsername });
+        }
+        else {
+        socket.emit('retrieve messages', { from: username, to: selectedUsername });
+        }
+});
+
+socket.on('users online', function(users) {
+    usersContainer.innerHTML = '';
+    if (users.length > 1) {
+        users.forEach(function(user) {
+            if (user !== username) {
+                var item = document.createElement('div');
+                item.textContent = user;
+                item.classList.add('user-box');
+                usersContainer.appendChild(item);
+            }
+        });
+    } else {
+        var item = document.createElement('div');
+        item.textContent = 'No users online';
+        item.classList.add('nousers');
+        usersContainer.appendChild(item);
+    }
+    var item = document.createElement('div');
+        item.textContent = 'Group Chat';
+        item.classList.add('user-box');
+        usersContainer.appendChild(item);
+});
+
+
+    socket.on('user disconnected', function(username, users) {
+    
+    var index = users.indexOf(username);
+    if (index !== -1) {
+        users.splice(index, 1);
+    }
+    });
+
+
+    </script>
+</body>
+</html>
